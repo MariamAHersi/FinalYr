@@ -1,6 +1,6 @@
 import React from 'react';
-import {View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView,
-} from 'react-native';
+import {View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView,} from 'react-native';
+import {Link} from 'expo-router'
 
 const ProfileScreen = () => {
   const user = {
@@ -20,9 +20,9 @@ const ProfileScreen = () => {
         {/* Personal Details Card */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>Personal details</Text>
+            <Text style={styles.cardTitle}>Profile</Text>
             <TouchableOpacity>
-              <Text style={styles.changeButton}>change</Text>
+              <Text style={styles.changeButton}>Change</Text>
             </TouchableOpacity>
           </View>
           
@@ -59,8 +59,15 @@ const ProfileScreen = () => {
         
         {/* Update Button */}
         <TouchableOpacity style={styles.updateButton}>
-          <Text style={styles.updateButtonText}>Update</Text>
+          <Text style={styles.ButtonText}>Update</Text>
         </TouchableOpacity>
+
+        <Link href="/sign-in" asChild>
+        <TouchableOpacity>
+          <Text style={styles.signOutButton}>Sign Out →</Text>
+        </TouchableOpacity>
+        </Link>
+
       </ScrollView>
     </SafeAreaView>
   );
@@ -150,11 +157,18 @@ const styles = StyleSheet.create({
     marginTop: 16,
     marginBottom: 30,
   },
-  updateButtonText: {
+  ButtonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: '600',
   },
+  signOutButton:{
+    color: '#D26DB9',
+    fontSize: 14,
+    alignSelf: 'flex-end',
+    marginTop: 70,
+    marginBottom: 10,
+  }
 });
 
 export default ProfileScreen;

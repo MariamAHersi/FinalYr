@@ -13,7 +13,13 @@ const SignUp = () => {
       {/* Name Input */}
       <TextInput
         style={styles.input}
-        placeholder="Full Name"
+        placeholder="First Name"
+        placeholderTextColor="#F48FB1"
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Last Name"
         placeholderTextColor="#F48FB1"
       />
 

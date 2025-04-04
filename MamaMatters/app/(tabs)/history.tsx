@@ -49,11 +49,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   text: {
-    color: '#e6a3d5', // Changed from white to match your pink theme
+    color: '#e6a3d5',
     fontSize: 42,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginTop: 80, // Add some spacing at the top
+    marginTop: 80,
   },
   subtitle: {
     fontSize: 14,
