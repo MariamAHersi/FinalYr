@@ -1,126 +1,324 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  Animated,
+} from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { Link } from "expo-router";
 
 const SignUp = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [emailFocused, setEmailFocused] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
+  const [confirmPasswordFocused, setConfirmPasswordFocused] = useState(false);
+
+  // Button animation
+  const buttonTextTranslate = React.useRef(new Animated.Value(0)).current;
+  const buttonIconOpacity = React.useRef(new Animated.Value(0)).current;
+  const buttonIconTranslate = React.useRef(new Animated.Value(10)).current;
+
+  const handleButtonHoverIn = () => {
+    Animated.parallel([
+      Animated.timing(buttonTextTranslate, {
+        toValue: -10,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(buttonIconOpacity, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(buttonIconTranslate, {
+        toValue: 20,
+        duration: 300,
+        useNativeDriver: true,
+      })
+    ]).start();
+  };
+
+  const handleButtonHoverOut = () => {
+    Animated.parallel([
+      Animated.timing(buttonTextTranslate, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(buttonIconOpacity, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(buttonIconTranslate, {
+        toValue: 10,
+        duration: 300,
+        useNativeDriver: true,
+      })
+    ]).start();
+  };
+
   return (
-    <SafeAreaView style={styles.container}>
-      
-      {/* Logo */}
-      <Image source={require('@/assets/images/mama_logo.png')} style={styles.logo} />
+    <View style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.loginWrapper}
+      >
+        <View style={styles.login}>
+          <Image
+            source={require('@/assets/images/mama-icon-web.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Text style={styles.title}>Welcome to Jolt</Text>
+          <Text style={styles.subtitle}>Lightning quick development!</Text>
 
-      {/* Name Input */}
-      <TextInput
-        style={styles.input}
-        placeholder="First Name"
-        placeholderTextColor="#F48FB1"
-      />
+          <View style={styles.form}>
+            {/* Email input */}
+            <View style={styles.textbox}>
+              <TextInput
+                style={[
+                  styles.input,
+                  (emailFocused || email !== '') && styles.inputActive,
+                ]}
+                value={email}
+                onChangeText={setEmail}
+                onFocus={() => setEmailFocused(true)}
+                onBlur={() => setEmailFocused(false)}
+              />
+              <Text
+                style={[
+                  styles.label,
+                  (emailFocused || email !== '') && styles.labelActive,
+                ]}
+              >
+                Email
+              </Text>
+            </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Last Name"
-        placeholderTextColor="#F48FB1"
-      />
+            {/* Password input */}
+            <View style={styles.textbox}>
+              <TextInput
+                style={[
+                  styles.input,
+                  (passwordFocused || password !== '') && styles.inputActive,
+                ]}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                onFocus={() => setPasswordFocused(true)}
+                onBlur={() => setPasswordFocused(false)}
+              />
+              <Text
+                style={[
+                  styles.label,
+                  (passwordFocused || password !== '') && styles.labelActive,
+                ]}
+              >
+                Password
+              </Text>
+            </View>
 
-      {/* Email Input */}
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        placeholderTextColor="#F48FB1"
-        keyboardType="email-address"
-      />
+            {/* Confirm Password input */}
+            <View style={styles.textbox}>
+              <TextInput
+                style={[
+                  styles.input,
+                  (confirmPasswordFocused || confirmPassword !== '') && styles.inputActive,
+                ]}
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                secureTextEntry
+                onFocus={() => setConfirmPasswordFocused(true)}
+                onBlur={() => setConfirmPasswordFocused(false)}
+              />
+              <Text
+                style={[
+                  styles.label,
+                  (confirmPasswordFocused || confirmPassword !== '') && styles.labelActive,
+                ]}
+              >
+                Confirm Password
+              </Text>
+            </View>
 
-      {/* Password Input */}
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        placeholderTextColor="#F48FB1"
-        secureTextEntry
-      />
+            {/* Register button */}
+            <Link href="/" asChild>
+              <TouchableOpacity
+                style={styles.button}
+                onPressIn={handleButtonHoverIn}
+                onPressOut={handleButtonHoverOut}
+                activeOpacity={0.9}
+              >
+                <Animated.Text
+                  style={[
+                    styles.buttonText,
+                    { transform: [{ translateX: buttonTextTranslate }] },
+                  ]}
+                >
+                  Register
+                </Animated.Text>
+                <Animated.View
+                  style={[
+                    styles.buttonIconContainer,
+                    {
+                      opacity: buttonIconOpacity,
+                      transform: [{ translateX: buttonIconTranslate }],
+                    },
+                  ]}
+                >
+                  <MaterialIcons name="arrow-forward" size={22} color="#f9f9f9" />
+                </Animated.View>
+              </TouchableOpacity>
+            </Link>
+          </View>
 
-      {/* Confirm Password Input */}
-      <TextInput
-        style={styles.input}
-        placeholder="Confirm Password"
-        placeholderTextColor="#F48FB1"
-        secureTextEntry
-      />
+          {/* Forgot Password link */}
+          <TouchableOpacity style={styles.forgotPasswordContainer}>
+            <Text style={styles.forgotPassword}>Forgot password?</Text>
+          </TouchableOpacity>
 
-      {/* Sign Up Button */}
-      <Link href="/" asChild>
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Sign Up</Text>
-        </TouchableOpacity>
-      </Link>
-
-      {/* Already have an account? Navigate to Sign-In */}
-      <Link href="/sign-in" style={{ marginHorizontal: 'auto'}} asChild>
-      <TouchableOpacity>
-        <Text style={styles.signInText}>
-          Already have an account? <Text style={styles.signInLink}>Sign In</Text>
-        </Text>
-      </TouchableOpacity>
-      </Link>
-
-    </SafeAreaView>
+          {/* Footer with Login Link */}
+          <View style={styles.footerContainer}>
+            <Text style={styles.footer}>
+              Already a member?{' '}
+              <Link href="/sign-in" asChild>
+                <TouchableOpacity>
+                  <Text style={styles.signupLink}>Log in!</Text>
+                </TouchableOpacity>
+              </Link>
+            </Text>
+          </View>
+        </View>
+      </KeyboardAvoidingView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
-    alignItems: 'center', 
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 20,
-  },
-  logo: {
-    width: 380,
-    height: 380,
-    marginBottom: 20,
-  },
-  input: {
-    width: 350,
-    height: 50,
-    backgroundColor: '#FFFFFF', // White input fields
-    borderRadius: 25,
-    paddingHorizontal: 15,
-    fontSize: 16,
-    color: '#e6a3d5', // Text color inside input
-    marginBottom: 15,
-    shadowColor: '#e6a3d5',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    elevation: 3,
-  },
-  button: {
-    width: 350,
-    height: 50,
-    backgroundColor: '#e6a3d5', // Vibrant pink button
-    borderRadius: 25,
+    backgroundColor: '#be99d6',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 10,
-    shadowColor: '#e6a3d5',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    elevation: 5,
+  },
+  loginWrapper: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  login: {
+    width: 380,
+    backgroundColor: '#a978c9',
+    borderRadius: 40,
+    padding: 32,
+    paddingTop: 72,
+    paddingBottom: 58,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 40 },
+    shadowOpacity: 0.1,
+    shadowRadius: 30,
+    elevation: 10,
+  },
+  logo: {
+    width: 74,
+    height: 74,
+    marginBottom: 32,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '500',
+    color: '#f9f8fa',
+    marginBottom: 6,
+  },
+  subtitle: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#f9f8fa',
+    marginBottom: 56,
+  },
+  form: {
+    width: '100%',
+    marginBottom: 32,
+  },
+  textbox: {
+    position: 'relative',
+    height: 56,
+    marginBottom: 12,
+  },
+  input: {
+    height: 56,
+    backgroundColor: '#efd7f4',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingTop: 20,
+    paddingBottom: 0,
+    color: '#be99d6',
+    fontSize: 16,
+    borderWidth: 0,
+    width: '100%',
+  },
+  inputActive: {
+    borderWidth: 2,
+    borderColor: '#a240ff',
+  },
+  label: {
+    position: 'absolute',
+    left: 16,
+    top: '50%',
+    fontSize: 16,
+    color: '#be99d6',
+    transform: [{ translateY: -8 }],
+  },
+  labelActive: {
+    top: 14,
+    fontSize: 12,
+    transform: [{ translateY: 0 }, { scale: 0.725 }],
+  },
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#efd7f4',
+    height: 56,
+    borderRadius: 8,
+    marginTop: 12,
+    width: '100%',
   },
   buttonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
+    color: '#be99d6',
+    fontSize: 17,
   },
-  signInText: {
-    marginTop: 20,
-    fontSize: 16,
-    color: '#D26DB9', // Darker pink text
+  buttonIconContainer: {
+    position: 'absolute',
+    right: '40%',
   },
-  signInLink: {
-    fontWeight: 'bold',
-    color: '#e6a3d5', // Brighter pink for link
+  forgotPasswordContainer: {
+    marginBottom: 56,
+  },
+  forgotPassword: {
+    color: '#8d1dd7',
+    fontSize: 15,
+  },
+  footerContainer: {
+    marginTop: 0,
+  },
+  footer: {
+    fontSize: 15,
+    color: '#f9f8fa',
+  },
+  signupLink: {
+    color: '#8d1dd7',
   },
 });
 

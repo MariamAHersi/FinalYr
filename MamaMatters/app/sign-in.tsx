@@ -13,7 +13,7 @@ import {
 import { MaterialIcons } from '@expo/vector-icons';
 import { Link } from "expo-router";
 
-const LoginScreen = () => {
+const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailFocused, setEmailFocused] = useState(false);
@@ -180,7 +180,7 @@ const LoginScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1e142c',
+    backgroundColor: '#be99d6', // 
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -191,22 +191,22 @@ const styles = StyleSheet.create({
   },
   login: {
     width: 380,
-    backgroundColor: 'rgba(6, 5, 7, 0.25)',
+    backgroundColor: '#a978c9',
     borderRadius: 40,
     padding: 32,
     paddingTop: 72,
     paddingBottom: 58,
     alignItems: 'center',
-    justifyContent: 'center', 
+    justifyContent: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 40 },
-    shadowOpacity: 0.1, 
+    shadowOpacity: 0.1,
     shadowRadius: 30,
     elevation: 10,
   },
   logo: {
-    width: 74,
-    height: 74,
+    width: 115,
+    height: 115,
     marginBottom: 32,
   },
   title: {
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 12,
     fontWeight: '500',
-    color: '#a392b3',
+    color: '#f9f8fa', 
     marginBottom: 56,
   },
   form: {
@@ -232,26 +232,26 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 56,
-    backgroundColor: '#251930',
+    backgroundColor: '#efd7f4', 
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingTop: 20,
     paddingBottom: 0,
-    color: '#f9f8fa',
+    color: '#be99d6', 
     fontSize: 16,
     borderWidth: 0,
     width: '100%',
   },
   inputActive: {
     borderWidth: 2,
-    borderColor: '#a240ff',
+    borderColor: '#ea8ad9', 
   },
   label: {
     position: 'absolute',
     left: 16,
     top: '50%',
     fontSize: 16,
-    color: '#a392b3',
+    color: '#be99d6', 
     transform: [{ translateY: -8 }],
   },
   labelActive: {
@@ -263,14 +263,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#a240ff',
+    backgroundColor: '#efd7f4', 
     height: 56,
     borderRadius: 8,
     marginTop: 12,
     width: '100%',
   },
   buttonText: {
-    color: '#f9f9f9',
+    color: '#be99d6', 
     fontSize: 17,
   },
   buttonIconContainer: {
@@ -281,19 +281,20 @@ const styles = StyleSheet.create({
     marginBottom: 56,
   },
   forgotPassword: {
-    color: '#a240ff',
+    color: '#8d1dd7', 
     fontSize: 15,
   },
   footerContainer: {
-    marginTop: 0,
+    marginTop: 20,
+    alignItems: 'center',
   },
   footer: {
     fontSize: 15,
-    color: '#a392b3',
+    color: '#f9f8fa', 
   },
   signupLink: {
-    color: '#a240ff',
+    color: '#8d1dd7', 
   },
 });
 
-export default LoginScreen;
+export default SignIn;
