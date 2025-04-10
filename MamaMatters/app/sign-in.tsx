@@ -76,8 +76,7 @@ const SignIn = () => {
             style={styles.logo}
             resizeMode="contain"
           />
-          <Text style={styles.title}>Welcome to Jolt</Text>
-          <Text style={styles.subtitle}>Lightning quick development!</Text>
+          <Text style={styles.title}>Welcome</Text>
 
           <View style={styles.form}>
             <View style={styles.textbox}>
@@ -180,7 +179,7 @@ const SignIn = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#be99d6', // 
+    backgroundColor: '#fffdff',  
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -191,7 +190,7 @@ const styles = StyleSheet.create({
   },
   login: {
     width: 380,
-    backgroundColor: '#a978c9',
+    backgroundColor: '#f9d5f6',
     borderRadius: 40,
     padding: 32,
     paddingTop: 72,
@@ -210,16 +209,10 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   title: {
-    fontSize: 24,
-    fontWeight: '500',
-    color: '#f9f8fa',
-    marginBottom: 6,
-  },
-  subtitle: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: '#f9f8fa', 
-    marginBottom: 56,
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginBottom: 36,
   },
   form: {
     width: '100%',
@@ -232,7 +225,7 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 56,
-    backgroundColor: '#efd7f4', 
+    backgroundColor: '#fffdff', 
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingTop: 20,
@@ -263,7 +256,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#efd7f4', 
+    backgroundColor: '#fffdff', 
     height: 56,
     borderRadius: 8,
     marginTop: 12,
