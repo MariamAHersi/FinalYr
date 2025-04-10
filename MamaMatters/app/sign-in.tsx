@@ -76,7 +76,7 @@ const SignIn = () => {
             style={styles.logo}
             resizeMode="contain"
           />
-          <Text style={styles.title}>Welcome</Text>
+          <Text style={styles.title}>Welcome !</Text>
 
           <View style={styles.form}>
             <View style={styles.textbox}>
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   title: {
-    fontSize: 30,
+    fontSize: 27,
     fontWeight: 'bold',
     color: '#ffffff',
     marginBottom: 36,
@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     fontSize: 15,
-    color: '#f9f8fa', 
+    color: '#ffffff', 
   },
   signupLink: {
     color: '#8d1dd7', 
