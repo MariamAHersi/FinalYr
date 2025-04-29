@@ -9,9 +9,12 @@ import {
   KeyboardAvoidingView,
   Platform,
   Animated,
+  Alert,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
+import API from '@/services/api'; // NEW: import your axios instance
+import { AxiosError } from 'axios';
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
@@ -19,10 +22,34 @@ const SignIn = () => {
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
 
+  const router = useRouter();
+
   // Button animation
   const buttonTextTranslate = React.useRef(new Animated.Value(0)).current;
   const buttonIconOpacity = React.useRef(new Animated.Value(0)).current;
   const buttonIconTranslate = React.useRef(new Animated.Value(10)).current;
+
+  // NEW: Login handler
+  const handleLogin = async () => {
+    try {
+      const response = await API.post('/users/login', {
+        email,
+        password,
+      });
+
+      if (response.data && response.data.success) {
+        // Navigate to home page or dashboard
+        router.replace('/'); // or use router.push('/dashboard') if you have one
+      } else {
+        Alert.alert('Login failed', response.data.message || 'Invalid credentials');
+      }
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      console.error(axiosError);
+      Alert.alert('Login Error', error?.response?.data?.message || 'An error occurred');
+    }
+  };
+
 
   const handleButtonHoverIn = () => {
     Animated.parallel([
@@ -122,11 +149,11 @@ const SignIn = () => {
               </Text>
             </View>
 
-             <Link href="/" asChild>
               <TouchableOpacity
                 style={styles.button}
                 onPressIn={handleButtonHoverIn}
                 onPressOut={handleButtonHoverOut}
+                onPress={handleLogin}
                 activeOpacity={0.9}
               >
                 <Animated.Text 
@@ -153,7 +180,6 @@ const SignIn = () => {
                   />
                 </Animated.View>
               </TouchableOpacity>
-            </Link>
           </View>
 
           <TouchableOpacity style={styles.forgotPasswordContainer}>

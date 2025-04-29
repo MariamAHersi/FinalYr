@@ -1,8 +1,11 @@
-const bcrypt = require('bcryptjs'); // For hashing passwords securely
-const { v4: uuidv4 } = require('uuid'); // Generates a unique user ID
+const express = require('express');
+const router = express.Router();
+const bcrypt = require('bcryptjs');
+const { v4: uuidv4 } = require('uuid');
+const appDb = require('../config/db/app-db');
 
 // POST /register - Handle user registration
-app.post('/register', async (req, res) => {
+router.post('/register', async (req, res) => {
   // Destructure user details from request body
   const { email, username, password } = req.body;
 
@@ -32,3 +35,5 @@ app.post('/register', async (req, res) => {
     res.status(500).json({ message: 'Error registering user' });
   }
 });
+
+module.exports = router;
