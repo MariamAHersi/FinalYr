@@ -9,9 +9,10 @@ import {
   KeyboardAvoidingView,
   Platform,
   Animated,
+  Alert,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Link } from "expo-router";
+import { Link, useRouter} from "expo-router";
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
@@ -21,10 +22,42 @@ const SignUp = () => {
   const [passwordFocused, setPasswordFocused] = useState(false);
   const [confirmPasswordFocused, setConfirmPasswordFocused] = useState(false);
 
+    const router = useRouter();
+
   // Button animation
   const buttonTextTranslate = React.useRef(new Animated.Value(0)).current;
   const buttonIconOpacity = React.useRef(new Animated.Value(0)).current;
   const buttonIconTranslate = React.useRef(new Animated.Value(10)).current;
+
+  const handleRegister = async () => {
+    try {
+      const response = await fetch('http://192.168.0.132:5000/users/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          email, 
+          password,
+          confirmPassword,
+        }),
+      });
+  
+      const data = await response.json();
+      console.log('Registration response:', data);
+  
+      if (response.ok) {
+        Alert.alert('Success', data.message || 'User registered successfully');
+        router.push('/sign-in'); 
+      } else {
+        Alert.alert('Registration Failed', data.message || 'Something went wrong');
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      Alert.alert('Error', 'Network error. Please try again later.');
+    }
+  };  
+
 
   const handleButtonHoverIn = () => {
     Animated.parallel([
@@ -150,11 +183,11 @@ const SignUp = () => {
             </View>
 
             {/* Register button */}
-            <Link href="/" asChild>
               <TouchableOpacity
                 style={styles.button}
                 onPressIn={handleButtonHoverIn}
                 onPressOut={handleButtonHoverOut}
+                onPress={handleRegister}
                 activeOpacity={0.9}
               >
                 <Animated.Text
@@ -177,7 +210,6 @@ const SignUp = () => {
                   <MaterialIcons name="arrow-forward" size={22} color="#f9f9f9" />
                 </Animated.View>
               </TouchableOpacity>
-            </Link>
           </View>
 
           {/* Forgot Password link */}

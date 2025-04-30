@@ -13,8 +13,6 @@ import {
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Link, useRouter } from "expo-router";
-import API from '@/services/api'; // NEW: import your axios instance
-import { AxiosError } from 'axios';
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
@@ -32,21 +30,33 @@ const SignIn = () => {
   // NEW: Login handler
   const handleLogin = async () => {
     try {
-      const response = await API.post('/users/login', {
-        email,
-        password,
+      const response = await fetch('http://192.168.0.132:5000/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
       });
+  
+      const data = await response.json();
+      
+      console.log('Response data:', data);
 
-      if (response.data && response.data.success) {
-        // Navigate to home page or dashboard
-        router.replace('/'); // or use router.push('/dashboard') if you have one
+      if (response.ok) {
+        // Login successful
+        Alert.alert('Success', data.message || 'Logged in successfully');
+        router.replace('/'); // Navigate to home page
       } else {
-        Alert.alert('Login failed', response.data.message || 'Invalid credentials');
+        // Server returned an error response
+        Alert.alert('Login failed', data.message || 'Invalid credentials');
       }
     } catch (error) {
-      const axiosError = error as AxiosError;
-      console.error(axiosError);
-      Alert.alert('Login Error', error?.response?.data?.message || 'An error occurred');
+      // Network error or JSON parsing error
+      console.error('Login error:', error);
+      Alert.alert('Login Error', 'Network error. Please check your connection.');
     }
   };
 
