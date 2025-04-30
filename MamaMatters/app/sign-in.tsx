@@ -30,7 +30,12 @@ const SignIn = () => {
   // NEW: Login handler
   const handleLogin = async () => {
     try {
-      const response = await fetch('http://192.168.0.132:5000/users/login', {
+      const API_BASE_URL =
+      Platform.OS === 'web'
+        ? 'http://localhost:5000' // for web version
+        : 'http://192.168.0.132:5000'; // for mobile (adjust IP if needed)
+
+      const response = await fetch(`${API_BASE_URL}/users/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -299,7 +304,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   buttonText: {
-    color: '#be99d6', 
+    color: '#8d1dd7', 
     fontSize: 17,
   },
   buttonIconContainer: {

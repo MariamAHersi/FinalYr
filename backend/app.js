@@ -5,6 +5,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
+const cors = require('cors');
 
 // Import database connections
 const appDb = require('./db/app-db');
@@ -17,6 +18,7 @@ const port = 5000;
 // Middleware to parse JSON bodies
 app.use(express.json()); 
 app.use(bodyParser.json());
+app.use(cors());
 
 // 🔍 Debug: Check if session secret is loaded
 console.log("SESSION_SECRET:", process.env.SESSION_SECRET);

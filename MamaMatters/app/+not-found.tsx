@@ -11,8 +11,8 @@ export default function NotFoundScreen() {
 
         <Link href="/" style={styles.link}>
         <TouchableOpacity style={styles.button}>
-                  <Text style={styles.buttonText}>Go to home screen!</Text>
-                </TouchableOpacity>
+          <Text style={styles.buttonText}>Go to home screen!</Text>
+        </TouchableOpacity>
         </Link>
 
       </View>

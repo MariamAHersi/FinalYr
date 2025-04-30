@@ -5,10 +5,7 @@ import {Link} from 'expo-router'
 const ProfileScreen = () => {
   const user = {
     name: 'Marvis Ighedosa',
-    email: 'Dasamarvis@gmail.com',
-    phone: '+234 9010392971',
-    address: '15 Palace Road PA4 5HS',
-    profileImage: require('@/assets/images/profile.png'), // Replace with your image path
+    profileImage: require('@/assets/images/profile.png'),
   };
 
   return (
@@ -21,9 +18,6 @@ const ProfileScreen = () => {
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <Text style={styles.cardTitle}>Profile</Text>
-            <TouchableOpacity>
-              <Text style={styles.changeButton}>Change</Text>
-            </TouchableOpacity>
           </View>
           
           <View style={styles.profileInfo}>
@@ -33,16 +27,19 @@ const ProfileScreen = () => {
             />
             <View style={styles.profileDetails}>
               <Text style={styles.name}>{user.name}</Text>
-              <Text style={styles.detailText}>{user.email}</Text>
-              <Text style={styles.detailText}>{user.phone}</Text>
-              <Text style={styles.detailText}>{user.address}</Text>
             </View>
           </View>
+
+          <Link href="/profile-update" asChild>
+            <TouchableOpacity style={styles.editButton}>
+              <Text style={styles.ButtonText}>Edit</Text>
+            </TouchableOpacity>
+          </Link>
         </View>
         
         {/* Menu Options */}
         <TouchableOpacity style={styles.menuItem}>
-          <Text style={styles.menuText}>History</Text>
+          <Text style={styles.menuText}>Notifications</Text>
         </TouchableOpacity>
         
         <TouchableOpacity style={styles.menuItem}>
@@ -55,11 +52,6 @@ const ProfileScreen = () => {
         
         <TouchableOpacity style={styles.menuItem}>
           <Text style={styles.menuText}>Help</Text>
-        </TouchableOpacity>
-        
-        {/* Update Button */}
-        <TouchableOpacity style={styles.updateButton}>
-          <Text style={styles.ButtonText}>Update</Text>
         </TouchableOpacity>
 
         <Link href="/sign-in" asChild>
@@ -108,12 +100,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  changeButton: {
-    color: '#D26DB9',
-    fontSize: 14,
-  },
   profileInfo: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
   profileImage: {
     width: 64,
@@ -149,13 +138,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
   },
-  updateButton: {
+  editButton: {
     backgroundColor: '#e6a3d5',
-    borderRadius: 30,
-    padding: 16,
+    borderRadius: 20,
+    padding: 13,
     alignItems: 'center',
-    marginTop: 16,
-    marginBottom: 30,
+    marginTop: 12,
+    marginBottom: 20,
   },
   ButtonText: {
     color: 'white',

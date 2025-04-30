@@ -4,6 +4,8 @@ import { Link } from 'expo-router';
 
 const images = require('@/assets/images/start_images.png');
 const logo = require('@/assets/images/mama-icon-web.png');
+const shape = require('@/assets/images/shape.png');
+const shape1 = require('@/assets/images/shape-1.png');
 
 const Start = () => {
     const handlePress = () => {
@@ -13,6 +15,8 @@ const Start = () => {
         <SafeAreaView style={styles.container}>
             <View style = {styles.contentContainer}>
 
+                <Image source={shape} style={styles.shape} />
+                <Image source={shape1} style={styles.shape1} />
                 <Image source={images} style={styles.images} />
 
                 <Link href="/sign-in" asChild>
@@ -39,6 +43,24 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 40,
     },
+    shape: {
+        height: 470,
+        left: -50,
+        position: 'absolute',
+        top: 380,
+        alignItems: 'center',
+        width: 290,
+        transform: [{ scale: 0.7 }],
+    },
+    shape1: {
+        height: 320,
+        width: 280,
+        right: -40,
+        position: 'absolute',
+        top: -10,
+        transform: [{ scale: 0.9}],
+        alignItems: 'center',
+        },
     button:{
         alignItems: 'center',
         backgroundColor: '#f3c5f7',
