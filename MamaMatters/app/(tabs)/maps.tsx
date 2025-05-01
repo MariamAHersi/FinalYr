@@ -1,239 +1,372 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Platform } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import React, { useEffect, useState } from 'react';
+import { 
+  View, 
+  StyleSheet, 
+  Text, 
+  ActivityIndicator, 
+  ScrollView, 
+  TouchableOpacity,
+  Dimensions,
+  Linking,
+  Alert
+} from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
+import * as Location from 'expo-location';
 
-// Define types for our components and data
-interface Hospital {
-  id: string;
+const { width, height } = Dimensions.get('window');
+
+interface LocationCoords {
+  latitude: number;
+  longitude: number;
+}
+
+interface Ward {
+  place_id: string;
   name: string;
-  address: string;
-  openHours: string;
-  phone: string;
-  rating: number;
-  coordinate: {
-    latitude: number;
-    longitude: number;
+  vicinity: string;
+  geometry: {
+    location: {
+      lat: number;
+      lng: number;
+    };
+  };
+  rating?: number;
+  opening_hours?: {
+    open_now: boolean;
   };
 }
 
-// Sample data with actual coordinates
-const hospitals: Hospital[] = [
-  {
-    id: '1',
-    name: 'Royal Free Hospital',
-    address: 'Pond St, London NW3 2QG',
-    openHours: 'Open 24 hours',
-    phone: '02077940500',
-    rating: 5,
-    coordinate: {
-      latitude: 51.5529,
-      longitude: -0.1679,
-    },
-  },
-  {
-    id: '2',
-    name: "Queen Charlotte's and Chelsea Hospital",
-    address: 'Du Cane Rd, London W12 0HS',
-    openHours: 'Open 24 hours',
-    phone: '02033131111',
-    rating: 4,
-    coordinate: {
-      latitude: 51.5167,
-      longitude: -0.2344,
-    },
-  },
-  {
-    id: '3',
-    name: 'Whittington Hospital Labour Ward',
-    address: 'Magdala Ave, London N19 5NF',
-    openHours: 'Open 24 hours',
-    phone: '02072885502',
-    rating: 4,
-    coordinate: {
-      latitude: 51.5658,
-      longitude: -0.1398,
-    },
-  },
-];
+const MaternalWardsScreen = () => {
+  const [location, setLocation] = useState<LocationCoords | null>(null);
+  const [wards, setWards] = useState<Ward[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedWard, setSelectedWard] = useState<Ward | null>(null);
 
-// Calculate the region to show all hospitals
-const initialRegion = {
-  latitude: hospitals.reduce((sum, hospital) => sum + hospital.coordinate.latitude, 0) / hospitals.length,
-  longitude: hospitals.reduce((sum, hospital) => sum + hospital.coordinate.longitude, 0) / hospitals.length,
-  latitudeDelta: 0.05,
-  longitudeDelta: 0.05,
-};
+  // Replace with your actual API key
+  const GOOGLE_API_KEY = 'AIzaSyA9OR_EHH_5fdzB_eBVPY7pvLdurA1K8K8';
 
-// Render stars for hospital ratings
-const RatingStars = ({ rating }: { rating: number }) => {
-  const stars = [];
-  for (let i = 0; i < 5; i++) {
-    stars.push(
-      <FontAwesome
-        key={i}
-        name="star"
-        size={14}
-        color={i < rating ? '#FFD700' : '#E0E0E0'}
-        style={{ marginRight: 2 }}
-      />
+  const fetchNearbyWards = async (lat: number, lng: number) => {
+    try {
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?` +
+        `location=${lat},${lng}` +
+        `&radius=5000` +
+        `&keyword=maternity+ward+OR+obstetrics+OR+prenatal+clinic` +
+        `&type=health` +
+        `&key=${GOOGLE_API_KEY}`
+      );
+
+      const data = await response.json();
+      
+      if (data.status === 'REQUEST_DENIED') {
+        Alert.alert(
+          'API Configuration Error',
+          'Please check your Google API key and ensure Places API is enabled',
+          [{ text: 'OK' }]
+        );
+        return [];
+      }
+
+      return data.results || [];
+    } catch (err) {
+      console.error('API Error:', err);
+      return [];
+    }
+  };
+
+  useEffect(() => {
+    const init = async () => {
+      try {
+        // 1. Get location permission
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          setError('Location permission denied. Please enable in settings.');
+          setLoading(false);
+          return;
+        }
+
+        // 2. Get current location
+        let { coords } = await Location.getCurrentPositionAsync({});
+        setLocation({
+          latitude: coords.latitude,
+          longitude: coords.longitude
+        });
+
+        // 3. Fetch nearby wards
+        const results = await fetchNearbyWards(coords.latitude, coords.longitude);
+        
+        if (results.length === 0) {
+          // Fallback to mock data
+          const mockWards: Ward[] = [
+            {
+              place_id: 'mock1',
+              name: 'City Maternity Hospital',
+              vicinity: '123 Healthcare Avenue',
+              geometry: {
+                location: {
+                  lat: coords.latitude + 0.01,
+                  lng: coords.longitude + 0.01
+                }
+              },
+              rating: 4.5,
+              opening_hours: { open_now: true }
+            },
+            {
+              place_id: 'mock2',
+              name: 'Women & Children Center',
+              vicinity: '456 Wellness Street',
+              geometry: {
+                location: {
+                  lat: coords.latitude - 0.01,
+                  lng: coords.longitude - 0.01
+                }
+              },
+              rating: 4.2,
+              opening_hours: { open_now: false }
+            }
+          ];
+          setWards(mockWards);
+          setError('No maternity wards found - showing sample locations');
+        } else {
+          setWards(results);
+        }
+      } catch (err) {
+        setError('Failed to load maternity ward data');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    init();
+  }, []);
+
+  const openDirections = (lat: number, lng: number) => {
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`;
+    Linking.openURL(url).catch(err => console.error("Couldn't open directions:", err));
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#e79df1" />
+        <Text style={styles.loadingText}>Finding nearby maternity wards...</Text>
+      </View>
     );
   }
-  return <View style={{ flexDirection: 'row' }}>{stars}</View>;
-};
 
-// Web-specific map component
-const WebMap = () => (
-  <View style={styles.mapContainer}>
-    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-      <iframe
-        src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d19868.687203537543!2d-0.1278!3d51.5074!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2suk!4v1683034761015!5m2!1sen!2suk"
-        width="100%"
-        height="100%"
-        style={{ border: 0 }}
-        allowFullScreen={true}
-        loading="lazy"
-        referrerPolicy="no-referrer-when-downgrade"
-        title="London Map"
-      />
-      
-      {/* Markers with more realistic positions */}
-      {hospitals.map((hospital) => (
-        <div
-          key={hospital.id}
-          style={{
-            position: 'absolute',
-            // Simplified positioning for demo purposes
-            left: `${(hospital.coordinate.longitude + 0.2344) * 200}%`,
-            top: `${(51.5658 - hospital.coordinate.latitude) * 200}%`,
-            width: 20,
-            height: 20,
-            backgroundColor: '#4CAF50',
-            borderRadius: '50%',
-            transform: 'translate(-50%, -50%)',
-            zIndex: 10,
-            cursor: 'pointer',
-          }}
-          title={hospital.name}
-        />
-      ))}
-    </div>
-  </View>
-);
-
-// Native-specific map component
-const NativeMap = () => (
-  <MapView 
-    style={styles.mapContainer}
-    initialRegion={initialRegion}
-  >
-    {hospitals.map((hospital) => (
-      <Marker
-        key={hospital.id}
-        coordinate={hospital.coordinate}
-        title={hospital.name}
-        description={hospital.address}
-      />
-    ))}
-  </MapView>
-);
-
-// Hospital list component
-const HospitalList = () => (
-  <ScrollView style={styles.listContainer}>
-    {hospitals.map((hospital) => (
-      <View key={hospital.id} style={styles.hospitalCard}>
-        <View style={styles.hospitalInfo}>
-          <Text style={styles.hospitalName}>{hospital.name}</Text>
-          <Text style={styles.hospitalAddress}>{hospital.address}</Text>
-          <Text style={styles.hospitalHours}>{hospital.openHours}</Text>
-          <Text style={styles.hospitalPhone}>{hospital.phone}</Text>
-          <RatingStars rating={hospital.rating} />
-        </View>
-      </View>
-    ))}
-  </ScrollView>
-);
-
-// Main component
-export default function MapScreen() {
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Maternity Wards</Text>
-        <Text style={styles.headerSubtitle}>Near You</Text>
+      {/* Map View (Top 40%) */}
+      <View style={styles.mapContainer}>
+        {location && (
+          <MapView
+            style={styles.map}
+            initialRegion={{
+              latitude: location.latitude,
+              longitude: location.longitude,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+            showsUserLocation={true}
+          >
+            {/* User Location Marker */}
+            <Marker
+              coordinate={{
+                latitude: location.latitude,
+                longitude: location.longitude,
+              }}
+              title="Your Location"
+              pinColor="#4285F4"
+            />
+
+            {/* Maternity Ward Markers */}
+            {wards.map((ward) => (
+              <Marker
+                key={ward.place_id}
+                coordinate={{
+                  latitude: ward.geometry.location.lat,
+                  longitude: ward.geometry.location.lng,
+                }}
+                title={ward.name}
+                description={ward.vicinity}
+                pinColor="#e79df1"
+                onPress={() => setSelectedWard(ward)}
+              />
+            ))}
+          </MapView>
+        )}
       </View>
 
-      {/* Map - conditionally render based on platform */}
-      {Platform.OS === 'web' ? <WebMap /> : <NativeMap />}
+      {/* List View (Bottom 60%) */}
+      <View style={styles.listContainer}>
+        <Text style={styles.listHeader}>Nearby Maternity Wards</Text>
+        
+        {error && (
+          <View style={styles.errorBanner}>
+            <Text style={styles.errorText}>{error}</Text>
+          </View>
+        )}
 
-      {/* Hospital List */}
-      <HospitalList />
+        <ScrollView 
+          style={styles.scrollContainer}
+          contentContainerStyle={styles.scrollContent}
+        >
+          {wards.map((ward) => (
+            <TouchableOpacity
+              key={ward.place_id}
+              style={[
+                styles.wardItem,
+                selectedWard?.place_id === ward.place_id && styles.selectedWardItem
+              ]}
+              onPress={() => setSelectedWard(ward)}
+            >
+              <View style={styles.wardInfo}>
+                <Text style={styles.wardName}>{ward.name}</Text>
+                <Text style={styles.wardAddress}>{ward.vicinity}</Text>
+                <View style={styles.wardMeta}>
+                  {ward.rating && (
+                    <Text style={styles.wardRating}>⭐ {ward.rating.toFixed(1)}</Text>
+                  )}
+                  <Text style={[
+                    styles.wardStatus,
+                    ward.opening_hours?.open_now ? styles.open : styles.closed
+                  ]}>
+                    {ward.opening_hours?.open_now ? 'Open Now' : 'Closed'}
+                  </Text>
+                </View>
+              </View>
+              <TouchableOpacity
+                style={styles.directionsButton}
+                onPress={() => openDirections(
+                  ward.geometry.location.lat,
+                  ward.geometry.location.lng
+                )}
+              >
+                <Text style={styles.directionsText}>Directions</Text>
+              </TouchableOpacity>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-  },
-  header: {
-    paddingTop: 40,
-    paddingBottom: 10,
-    paddingHorizontal: 20,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
+    backgroundColor: '#f8f9fa',
   },
   mapContainer: {
-    height: 250,
+    height: height * 0.4,
     width: '100%',
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-    overflow: 'hidden',
+  },
+  map: {
+    ...StyleSheet.absoluteFillObject,
   },
   listContainer: {
     flex: 1,
+    padding: 16,
+    backgroundColor: '#fff',
   },
-  hospitalCard: {
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-    backgroundColor: '#fafafa',
+  listHeader: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginBottom: 12,
+    color: '#202124',
   },
-  hospitalInfo: {
+  scrollContainer: {
     flex: 1,
   },
-  hospitalName: {
+  scrollContent: {
+    paddingBottom: 16,
+  },
+  wardItem: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  selectedWardItem: {
+    borderColor: '#e79df1',
+    backgroundColor: '#faf5fc',
+  },
+  wardInfo: {
+    flex: 1,
+  },
+  wardName: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
+    color: '#202124',
     marginBottom: 4,
   },
-  hospitalAddress: {
+  wardAddress: {
     fontSize: 14,
-    color: '#333',
-    marginBottom: 2,
+    color: '#5f6368',
+    marginBottom: 8,
   },
-  hospitalHours: {
-    fontSize: 12,
-    color: '#4CAF50',
-    marginBottom: 2,
+  wardMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  hospitalPhone: {
-    fontSize: 12,
-    color: '#666',
-    marginBottom: 4,
+  wardRating: {
+    fontSize: 14,
+    color: '#FFA000',
+    marginRight: 12,
+  },
+  wardStatus: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  open: {
+    color: '#0D904F',
+  },
+  closed: {
+    color: '#D93025',
+  },
+  directionsButton: {
+    backgroundColor: '#e79df1',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+  },
+  directionsText: {
+    color: 'white',
+    fontWeight: '500',
+    fontSize: 14,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  loadingText: {
+    marginTop: 16,
+    color: '#5f6368',
+  },
+  errorBanner: {
+    backgroundColor: '#FFEBEE',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+  errorText: {
+    color: '#D32F2F',
+    fontSize: 14,
   },
 });
+
+export default MaternalWardsScreen;

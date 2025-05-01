@@ -1,8 +1,42 @@
 import React from 'react';
-import {View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView,} from 'react-native';
-import {Link} from 'expo-router'
+import {View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, Platform} from 'react-native';
+import {Link, useRouter} from 'expo-router';
+
+
 
 const ProfileScreen = () => {
+  const router = useRouter(); // Hook to navigate
+
+  const handleLogout = async () => {
+    try {
+       const API_BASE_URL =
+            Platform.OS === 'web'
+              ? 'http://localhost:5000' // for web version
+              : 'http://192.168.0.132:5000'; // mobile Ip
+
+      const response = await fetch(`${API_BASE_URL}/users/logout`, {
+        method: 'POST',
+        credentials: 'include', // important for session cookies
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ confirmLogout: true }), // Important!
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log(data.message);
+        router.replace('/sign-in'); // Navigate to sign-in page
+      } else {
+        alert('Logout failed: ' + data.message);
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+      alert('Something went wrong during logout');
+    }
+  };
+
   const user = {
     name: 'Marvis Ighedosa',
     profileImage: require('@/assets/images/profile.png'),
@@ -54,11 +88,9 @@ const ProfileScreen = () => {
           <Text style={styles.menuText}>Help</Text>
         </TouchableOpacity>
 
-        <Link href="/sign-in" asChild>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleLogout}>
           <Text style={styles.signOutButton}>Sign Out →</Text>
         </TouchableOpacity>
-        </Link>
 
       </ScrollView>
     </SafeAreaView>

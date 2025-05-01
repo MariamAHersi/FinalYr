@@ -1,10 +1,10 @@
 const { Pool } = require('pg');
 
 const trainingDb = new Pool({
-  user: 'mariamh',      // Replace with your actual username
+  user: 'mariamh',      
   host: 'localhost',
-  database: 'maternal_health_training', // Your training database name
-  password: 'hersi123',   // Replace with your actual password
+  database: 'maternal_health_training', 
+  password: 'hersi123',   
   port: 5432
 });
 

@@ -118,12 +118,55 @@ app.post('/users/login', async (req, res) => {
   
   // Logout Route
   app.post('/users/logout', (req, res) => {
+    const { confirmLogout } = req.body;
+
+    if (!confirmLogout) {
+      return res.status(400).json({ message: 'Logout not confirmed' });
+    }
+
     req.session.destroy((err) => {
       if (err) {
         return res.status(500).json({ message: 'Failed to log out' });
       }
       res.json({ message: 'Logged out successfully' });
     });
+  });
+
+  // Utility function to validate email
+  const isValidEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  // Route to save/update mother profile details
+  app.post('/users/profile', async (req, res) => {
+  const { firstName, lastName, email, age } = req.body;
+
+  // Input validation
+  if (!firstName || !lastName || !email || !age) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  if (!isValidEmail(email)) {
+    return res.status(400).json({ message: 'Invalid email format' });
+  }
+
+  if (isNaN(age) || age < 0) {
+    return res.status(400).json({ message: 'Age must be a valid non-negative number' });
+  }
+
+  try {
+    const result = await appDb.query(
+      `INSERT INTO motherprofile (firstname, lastname, email, age)
+        VALUES ($1, $2, $3, $4)
+        RETURNING *`,
+      [firstName, lastName, email, age]
+    );
+
+    res.status(201).json({ message: 'Profile saved', data: result.rows[0] });
+  } catch (err) {
+    console.error('Error saving profile:', err);
+    res.status(500).json({ message: 'Error saving profile' });
+  }
   });
 
 // Start the server

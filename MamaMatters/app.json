@@ -10,10 +10,11 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
+    }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/mama-icon.png",
         "backgroundColor": "#ffffff"
       }
     },
@@ -38,4 +39,3 @@
       "typedRoutes": true
     }
   }
-}
