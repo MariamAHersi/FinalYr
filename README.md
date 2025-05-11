@@ -12,7 +12,7 @@ To empower mothers through technology by enabling them to track health data and 
 - 🖥️ Design an intuitive and accessible interface for recording and visualizing health data (e.g., blood pressure, heart rate).
 - ⚠️ Implement intelligent risk analysis algorithms to notify users of possible health complications.
 - 🗺️ Integrate geolocation to locate nearby maternal wards and clinics.
-- 📊 Analyze maternal mortality datasets to enhance app functionality and deliver actionable insights.
+- 📊 Analyze maternal health datasets to enhance app functionality and deliver actionable insights.
 
 ---
 
@@ -55,7 +55,7 @@ The app has been developed with input from:
 
 - **Frontend:** React Native
 - **Backend:** Node.js, Express
-- **Database:** MongoDB
+- **Database:** PostgreSQL
 - **APIs:** Google Maps, NHS facility data
 - **Machine Learning:** Python (for model development and risk prediction)
 
