@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "MamaMatters",
-    "slug": "MamaMatters",
+    "name": "myapp",
+    "slug": "myapp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/mama-icon.png",
@@ -10,13 +10,13 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
-    }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/mama-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "edgeToEdgeEnabled": true
     },
     "web": {
       "bundler": "metro",
@@ -39,3 +39,4 @@
       "typedRoutes": true
     }
   }
+}
