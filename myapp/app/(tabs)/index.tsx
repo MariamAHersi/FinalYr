@@ -42,7 +42,7 @@ const HealthMetricsScreen = () => {
         diastolic: false,
         heartRate: false,
         sleep: false,
-        bloodSugar: false // New editing state for blood sugar
+        bloodSugar: false 
     });
 
     // Blood sugar range indicator
@@ -260,7 +260,7 @@ const HealthMetricsScreen = () => {
                         </View>
                     </View>
                     
-                    {/* Blood Sugar Card - Similar layout to Water Intake */}
+                    {/* Blood Sugar Card - */}
                     <View style={styles.waterCard}>
                         <Text style={styles.cardTitle}>Blood Sugar</Text>
                         <View style={styles.bloodSugarContainer}>
