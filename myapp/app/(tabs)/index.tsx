@@ -30,7 +30,8 @@ const HealthMetricsScreen = () => {
         systolic: '140',
         diastolic: '90',
         heartRate: '105',
-        sleep: '08:00'
+        sleep: '08:00',
+        bloodSugar: '5.5' // New blood sugar state in mmol/L
     });
     
     // Editing states
@@ -40,7 +41,15 @@ const HealthMetricsScreen = () => {
         systolic: false,
         diastolic: false,
         heartRate: false,
-        sleep: false
+        sleep: false,
+        bloodSugar: false // New editing state for blood sugar
+    });
+
+    // Blood sugar range indicator
+    const [bloodSugarRange, setBloodSugarRange] = useState({
+        low: false,
+        normal: true,
+        high: false
     });
 
     const toggleCup = (index: number) => {
@@ -54,6 +63,18 @@ const HealthMetricsScreen = () => {
             ...prev,
             [field]: value
         }));
+        
+        // Update blood sugar range indicators when blood sugar value changes
+        if (field === 'bloodSugar') {
+            const numValue = parseFloat(value);
+            if (!isNaN(numValue)) {
+                setBloodSugarRange({
+                    low: numValue < 4.0,
+                    normal: numValue >= 4.0 && numValue <= 7.8,
+                    high: numValue > 7.8
+                });
+            }
+        }
     };
 
     const toggleEdit = (field: string) => {
@@ -239,6 +260,63 @@ const HealthMetricsScreen = () => {
                         </View>
                     </View>
                     
+                    {/* Blood Sugar Card - Similar layout to Water Intake */}
+                    <View style={styles.waterCard}>
+                        <Text style={styles.cardTitle}>Blood Sugar</Text>
+                        <View style={styles.bloodSugarContainer}>
+                            <TouchableOpacity 
+                                onPress={() => toggleEdit('bloodSugar')}
+                                style={styles.bloodSugarValueContainer}
+                            >
+                                {editing.bloodSugar ? (
+                                    <TextInput
+                                        style={styles.bloodSugarInput}
+                                        value={metrics.bloodSugar}
+                                        onChangeText={(text) => handleMetricChange('bloodSugar', text)}
+                                        keyboardType="numeric"
+                                        autoFocus
+                                        onBlur={() => toggleEdit('bloodSugar')}
+                                    />
+                                ) : (
+                                    <Text style={styles.bloodSugarValue}>{metrics.bloodSugar}</Text>
+                                )}
+                                <Text style={styles.bloodSugarLabel}>mmol/L</Text>
+                            </TouchableOpacity>
+                            
+                            <View style={styles.bloodSugarRanges}>
+                                <TouchableOpacity 
+                                    style={[
+                                        styles.rangeIndicator, 
+                                        bloodSugarRange.low ? styles.activeRangeLow : styles.inactiveRange
+                                    ]}
+                                >
+                                    <Text style={styles.rangeText}>Low</Text>
+                                    <Text style={styles.rangeValue}>{"<4.0"}</Text>
+                                </TouchableOpacity>
+                                
+                                <TouchableOpacity 
+                                    style={[
+                                        styles.rangeIndicator, 
+                                        bloodSugarRange.normal ? styles.activeRangeNormal : styles.inactiveRange
+                                    ]}
+                                >
+                                    <Text style={styles.rangeText}>Normal</Text>
+                                    <Text style={styles.rangeValue}>4.0-7.8</Text>
+                                </TouchableOpacity>
+                                
+                                <TouchableOpacity 
+                                    style={[
+                                        styles.rangeIndicator, 
+                                        bloodSugarRange.high ? styles.activeRangeHigh : styles.inactiveRange
+                                    ]}
+                                >
+                                    <Text style={styles.rangeText}>High</Text>
+                                    <Text style={styles.rangeValue}>{">7.8"}</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                    
                     {/* Extra padding at the bottom */}
                     <View style={{ height: 30 }} />
                 </ScrollView>
@@ -406,6 +484,80 @@ const styles = StyleSheet.create({
     },
     bpmInput: {
         marginRight: 4,
+    },
+    
+    // Blood Sugar specific styles
+    bloodSugarContainer: {
+        alignItems: 'center',
+        paddingVertical: 10,
+    },
+    bloodSugarValueContainer: {
+        flexDirection: 'row',
+        alignItems: 'baseline',
+        justifyContent: 'center',
+        marginBottom: 16,
+    },
+    bloodSugarValue: {
+        fontSize: 32,
+        fontWeight: 'bold',
+        color: '#cc2ae1',
+        marginRight: 4,
+    },
+    bloodSugarLabel: {
+        fontSize: 16,
+        color: '#666',
+    },
+    bloodSugarInput: {
+        fontSize: 32,
+        fontWeight: 'bold',
+        color: '#8d1dd7',
+        textAlign: 'center',
+        padding: 0,
+        margin: 0,
+        marginRight: 4,
+        minWidth: 80,
+    },
+    bloodSugarRanges: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        width: '100%',
+        marginTop: 5,
+    },
+    rangeIndicator: {
+        width: '30%',
+        paddingVertical: 10,
+        paddingHorizontal: 5,
+        borderRadius: 10,
+        alignItems: 'center',
+    },
+    activeRangeLow: {
+        backgroundColor: '#ffeeee',
+        borderWidth: 1,
+        borderColor: '#ff9999',
+    },
+    activeRangeNormal: {
+        backgroundColor: '#e7f7e7',
+        borderWidth: 1,
+        borderColor: '#8cd28c',
+    },
+    activeRangeHigh: {
+        backgroundColor: '#fff0e0',
+        borderWidth: 1,
+        borderColor: '#ffaa66',
+    },
+    inactiveRange: {
+        backgroundColor: '#f5f5f5',
+        borderWidth: 1,
+        borderColor: '#dddddd',
+    },
+    rangeText: {
+        fontSize: 12,
+        fontWeight: '600',
+        marginBottom: 4,
+    },
+    rangeValue: {
+        fontSize: 10,
+        color: '#666',
     },
 });
 
